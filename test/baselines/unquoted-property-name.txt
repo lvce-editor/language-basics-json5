@@ -14,13 +14,13 @@ Numeric
 Punctuation
 Whitespace
 Punctuation
-Text
+PropertyName
 Punctuation
 Whitespace
 Numeric
 Punctuation
 Whitespace
-Text
+PropertyName
 Punctuation
 Whitespace
 LanguageConstant

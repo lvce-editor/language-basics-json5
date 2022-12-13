@@ -78,7 +78,6 @@ const RE_SELECTOR = /^[\.a-zA-Z\d\-\:>]+/
 const RE_WHITESPACE = /^\s+/
 const RE_CURLY_OPEN = /^\{/
 const RE_CURLY_CLOSE = /^\}/
-const RE_PROPERTY_NAME = /^[a-zA-Z\-]+/
 const RE_COLON = /^:/
 const RE_PROPERTY_VALUE = /^[^\n;]+/
 const RE_SEMICOLON = /^;/
@@ -184,7 +183,7 @@ export const tokenizeLine = (line, lineState) => {
           token = TokenType.Comment
           state = State.AfterCurlyOpen
         } else if ((next = part.match(RE_WORD))) {
-          token = TokenType.Text
+          token = TokenType.PropertyName
           state = State.AfterPropertyName
         } else if ((next = part.match(RE_ANYTHING))) {
           token = TokenType.Text
