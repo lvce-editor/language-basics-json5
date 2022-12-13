@@ -1,0 +1,12 @@
+{
+  "id": "builtin.language-basics-json5",
+  "name": "Language Basics JSON5",
+  "description": "Provides syntax highlighting and bracket matching in JSON5 files.",
+  "languages": [
+    {
+      "id": "json5",
+      "extensions": [".json5"],
+      "tokenize": "src/tokenizeJson5.js"
+    }
+  ]
+}
