@@ -1,5 +1,7 @@
 # Language Basics JSON5
 
+Provides syntax highlighting in JSON5 files.
+
 ## Contributing
 
 ```sh
