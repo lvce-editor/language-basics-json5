@@ -4,19 +4,20 @@
 export const State = {
   TopLevelContent: 1,
   AfterCurlyOpen: 2,
-  InsideString: 3,
+  InsideDoubleQuoteString: 3,
   AfterPropertyName: 4,
   AfterPropertyNameAfterColon: 5,
   AfterPropertyValue: 6,
   JsonPropertyKey: 7,
   InsideLineComment: 8,
   InsidePropertyNameString: 9,
+  InsideSingleQuoteString: 10,
 }
 
 export const StateMap = {
   [State.TopLevelContent]: 'TopLevelContent',
   [State.AfterCurlyOpen]: 'AfterCurlyOpen',
-  [State.InsideString]: 'InsideString',
+  [State.InsideDoubleQuoteString]: 'InsideString',
   [State.AfterPropertyName]: 'AfterPropertyName',
   [State.AfterPropertyNameAfterColon]: 'AfterPropertyNameAfterColon',
   [State.AfterPropertyValue]: 'AfterPropertyValue',
@@ -83,7 +84,9 @@ const RE_PROPERTY_VALUE = /^[^\n;]+/
 const RE_SEMICOLON = /^;/
 const RE_COMMA = /^,/
 const RE_DOUBLE_QUOTE = /^"/
+const RE_SINGLE_QUOTE = /^'/
 const RE_STRING_DOUBLE_QUOTE_CONTENT = /^[^"\\]+/
+const RE_STRING_SINGLE_QUOTE_CONTENT = /^[^'\\]+/
 const RE_LANGUAGE_CONSTANT = /^(?:true|false|null)/
 const RE_SQUARE_OPEN = /^\[/
 const RE_SQUARE_CLOSE = /^\]/
@@ -149,7 +152,11 @@ export const tokenizeLine = (line, lineState) => {
           state = State.TopLevelContent
         } else if ((next = part.match(RE_DOUBLE_QUOTE))) {
           token = TokenType.Punctuation
-          state = State.InsideString
+          state = State.InsideDoubleQuoteString
+          stack.push(State.TopLevelContent)
+        } else if ((next = part.match(RE_SINGLE_QUOTE))) {
+          token = TokenType.Punctuation
+          state = State.InsideSingleQuoteString
           stack.push(State.TopLevelContent)
         } else if ((next = part.match(RE_LINE_COMMENT))) {
           token = TokenType.Comment
@@ -208,19 +215,33 @@ export const tokenizeLine = (line, lineState) => {
           throw new Error('no')
         }
         break
-      case State.InsideString:
+      case State.InsideDoubleQuoteString:
         if ((next = part.match(RE_STRING_DOUBLE_QUOTE_CONTENT))) {
           token = TokenType.JsonPropertyValueString
-          state = State.InsideString
+          state = State.InsideDoubleQuoteString
         } else if ((next = part.match(RE_DOUBLE_QUOTE))) {
           token = TokenType.Punctuation
           state = stack.pop()
         } else if ((next = part.match(RE_STRING_ESCAPE))) {
           token = TokenType.String
-          state = State.InsideString
+          state = State.InsideDoubleQuoteString
         } else {
           line.slice(0, index) //?
           part //?
+          throw new Error('no')
+        }
+        break
+      case State.InsideSingleQuoteString:
+        if ((next = part.match(RE_STRING_SINGLE_QUOTE_CONTENT))) {
+          token = TokenType.JsonPropertyValueString
+          state = State.InsideSingleQuoteString
+        } else if ((next = part.match(RE_SINGLE_QUOTE))) {
+          token = TokenType.Punctuation
+          state = stack.pop()
+        } else if ((next = part.match(RE_STRING_ESCAPE))) {
+          token = TokenType.String
+          state = State.InsideSingleQuoteString
+        } else {
           throw new Error('no')
         }
         break
@@ -244,7 +265,11 @@ export const tokenizeLine = (line, lineState) => {
           state = State.AfterPropertyNameAfterColon
         } else if ((next = part.match(RE_DOUBLE_QUOTE))) {
           token = TokenType.Punctuation
-          state = State.InsideString
+          state = State.InsideDoubleQuoteString
+          stack.push(State.AfterPropertyValue)
+        } else if ((next = part.match(RE_SINGLE_QUOTE))) {
+          token = TokenType.Punctuation
+          state = State.InsideSingleQuoteString
           stack.push(State.AfterPropertyValue)
         } else if ((next = part.match(RE_LANGUAGE_CONSTANT))) {
           token = TokenType.LanguageConstant
