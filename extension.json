@@ -5,8 +5,11 @@
   "languages": [
     {
       "id": "json5",
-      "extensions": [".json5"],
+      "extensions": [
+        ".json5"
+      ],
       "tokenize": "src/tokenizeJson5.js"
     }
-  ]
+  ],
+  "repository": "https://github.com/lvce-editor/language-basics-json5"
 }
